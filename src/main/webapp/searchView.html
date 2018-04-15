@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Searched User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div style="position: fixed; right:0; z-index:500;">
+    <form action="userSignout" method="post">
+        <button type="submit" class="btn btn-primary btn-sm">Sign out</button>
+    </form>
+</div>
+<br>
+<br>
+<br>
+<div style="position: relative;">
+    <button type="button" class="btn btn-default btn-lg btn-block"><a href="./adminView.html">Click to return to the
+        home page</a></button>
+</div>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table id="user" class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">User</legend>
+                </caption>
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Login</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Enabled</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function editUser(id) {
+        sessionStorage.setItem('id', id);
+        sessionStorage.setItem('action', 'edit');
+        location.href = "editUser.html";
+    }
+
+    function deleteUser(id) {
+        location.href = "admin?action=delete&id=" + id;
+    }
+
+    $(document).ready(function getUsers() {
+        $.ajax('./admin', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                searchLogin: sessionStorage.getItem('searchLogin'),
+                action: sessionStorage.getItem("action")
+            },
+            success(data) {
+                if (!data) {
+                    alert('The user not found!');
+                    location.href = "adminView.html"
+                } else {
+                    document.getElementById("user").innerHTML += "<tbody><tr>"
+                        + "<td>" + data.id + "</td>"
+                        + "<td>" + data.name + "</td>"
+                        + "<td>" + data.password + "</td>"
+                        + "<td>" + data.role.name + "</td>"
+                        + "<td>" + data.enabled + "</td>"
+                        + "<td><button class='btn btn-primary btn-sm' onclick='editUser(\"" + data.id + "\")'><i class='glyphicon glyphicon-edit'></i>Edit User</button></td>"
+                        + "<td><button class='btn btn-primary btn-sm' onclick='deleteUser(\"" + data.id + "\")'><i class='glyphicon glyphicon-remove'></i>Delete User</button></td>"
+                        + "</tr></tbody>";
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

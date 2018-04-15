@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div style="position: fixed; right:0; z-index:500;">
+    <form action="userSignout" method="post">
+        <button type="submit" class="btn btn-primary btn-sm">Sign out</button>
+    </form>
+</div>
+<br>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">Select action</legend>
+                </caption>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="come()">Пришёл</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type=button" class="btn btn-primary" onclick="out()">Ушёл</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="worked()">Отработал</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table id="times" class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">Time worked</legend>
+                </caption>
+            </table>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <button class='btn btn-primary btn-sm' onclick='createUser()'>Create the new User</button>
+    </div>
+</div>
+<br>
+<br>
+<h3 align="center">Search the user</h3>
+<div class="container">
+    <div class="row">
+        <form role="search">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Login" name="searchLogin">
+                <span class="input-group-btn">
+    	    <button class="btn btn-info" type="button" onclick="searchUser()">
+	      	  <i class="glyphicon glyphicon-search"></i>
+    	    </button>
+	      </span>
+            </div>
+        </form>
+    </div>
+</div>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table id="users" class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">List of Users</legend>
+                </caption>
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Login</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Enabled</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function come() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'come'
+            },
+            success(data) {
+                var result = data.responseText;
+                if (result === "true") {
+                    location.href = "./adminView.html";
+                }
+            }
+        });
+    }
+
+    function out() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'out'
+            },
+            success(data) {
+                var result = data.responseText;
+                if (result === "true") {
+                    location.href = "./adminView.html";
+                }
+            }
+        });
+    }
+
+    function worked() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'worked'
+            },
+            success(data) {
+                document.getElementById("times").innerHTML += "<tbody><tr>"
+                    + "<td>You worked today (Hour:Minute:Second):</td>"
+                    + "<td>" + data.timework + "</td>"
+                    + "</tr></tbody>";
+            }
+        });
+    }
+
+    function searchUser() {
+        sessionStorage.setItem('action', 'search');
+        sessionStorage.setItem('searchLogin', document.getElementsByName("searchLogin")[0].value);
+        location.href = "searchView.html";
+    }
+
+    function createUser() {
+        sessionStorage.setItem('action', 'create');
+        location.href = "editUser.html";
+    }
+
+    function editUser(id) {
+        sessionStorage.setItem('id', id);
+        sessionStorage.setItem('action', 'edit');
+        location.href = "editUser.html";
+    }
+
+    function deleteUser(id) {
+        location.href = "admin?action=delete&id=" + id;
+    }
+
+    $(document).ready(function getUsers() {
+        $.ajax('./admin', {
+            method: 'get',
+            dataType: "json",
+            success(data) {
+                $.each(data, function (i, elem) {
+                    document.getElementById("users").innerHTML += "<tbody><tr>"
+                        + "<td>" + elem.id + "</td>"
+                        + "<td>" + elem.name + "</td>"
+                        + "<td>" + elem.password + "</td>"
+                        + "<td>" + elem.role.name + "</td>"
+                        + "<td>" + elem.enabled + "</td>"
+                        + "<td><button class='btn btn-primary btn-sm' onclick='editUser(\"" + elem.id + "\")'><i class='glyphicon glyphicon-edit'></i>Edit User</button></td>"
+                        + "<td><button class='btn btn-primary btn-sm' onclick='deleteUser(\"" + elem.id + "\")'><i class='glyphicon glyphicon-remove'></i>Delete User</button></td>"
+                        + "</tr></tbody>";
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div style="position: fixed; right:0; z-index:500;">
+    <form action="./userSignout" method="post">
+        <button type="submit" class="btn btn-primary btn-sm">Sign out</button>
+    </form>
+</div>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">Select action</legend>
+                </caption>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="come()">Пришёл</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type=button" class="btn btn-primary" onclick="out()">Ушёл</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="worked()">Отработал</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-12">
+            <table id="times" class="table table-condensed" align="center">
+                <caption>
+                    <legend align="center">Time worked</legend>
+                </caption>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function come() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'come'
+            },
+            success(data) {
+                var result = data.responseText;
+                if (result === "true") {
+                    location.href = "./userView.html";
+                }
+            }
+        });
+    }
+
+    function out() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'out'
+            },
+            success(data) {
+                var result = data.responseText;
+                if (result === "true") {
+                    location.href = "./userView.html";
+                }
+            }
+        });
+    }
+
+    function worked() {
+        $.ajax('./usertimecontroller', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                action: 'worked'
+            },
+            success(data) {
+                document.getElementById("times").innerHTML += "<tbody><tr>"
+                    + "<td>You worked today (Hour:Minute:Second):</td>"
+                    + "<td>" + data.timework + "</td>"
+                    + "</tr></tbody>";
+            }
+        });
+    }
+</script>
+</body>
+</html>

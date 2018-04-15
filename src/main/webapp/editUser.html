@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div style="position: fixed; right:0; z-index:500;">
+    <form action="./userSignout" method="post">
+        <button type="submit" class="btn btn-primary btn-sm">Sign out</button>
+    </form>
+</div>
+<br>
+<br>
+<div style="position: relative;">
+    <button type="button" class="btn btn-default btn-lg btn-block"><a href="./adminView.html">Click to return to the
+        home page</a></button>
+</div>
+<br>
+<br>
+<form align="center" class="form-inline" role="form">
+    <div class="form-group">
+        <input type="hidden" class="form-control" name="id" id="id"/>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Login" name="login" id="login" required/>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Password" name="password" id="password" required/>
+    </div>
+    <div class="form-group">
+        <select class="form-control" name="role">
+            <option value="100000">USER</option>
+            <option value="100001">ADMIN</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <select class="form-control" name="enabled">
+            <option value="true">true</option>
+            <option value="false">false</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" onclick="saveUser()">Save</button>
+    </div>
+</form>
+<script>
+    function saveUser() {
+        $.ajax('./admin', {
+            method: 'post',
+            data: {
+                id: document.getElementsByName("id")[0].value,
+                login: document.getElementsByName("login")[0].value,
+                password: document.getElementsByName("password")[0].value,
+                role: document.getElementsByName("role")[0].value,
+                enabled: document.getElementsByName("enabled")[0].value
+            },
+            success() {
+                location.href = "adminView.html";
+            }
+        });
+    }
+
+    $(document).ready(function getUser() {
+        $.ajax('./admin', {
+            method: 'get',
+            dataType: "json",
+            data: {
+                id: sessionStorage.getItem("id"),
+                action: sessionStorage.getItem("action")
+            },
+            success(data) {
+                $('#id').val(data.id);
+                $('#login').val(data.name);
+                $('#password').val(data.password);
+            }
+        });
+    });
+</script>
+</body>
+</html>
